@@ -4,6 +4,11 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { env } from '../../env'
 import { prisma } from '../../lib/prismaClient'
+import {
+  responseConflictSchema,
+  responseNotFoundSchema,
+  responseOkLoginSchema,
+} from '../../schemas/response-status'
 
 export type Payload = {
   userId: string
@@ -21,6 +26,11 @@ export const createTokenLinkRoute: FastifyPluginAsyncZod = async (app) => {
           email: z.string().email(),
           password: z.string().min(8),
         }),
+        response: {
+          200: responseOkLoginSchema,
+          401: responseConflictSchema,
+          404: responseNotFoundSchema,
+        },
       },
     },
     async (request, reply) => {
@@ -38,7 +48,10 @@ export const createTokenLinkRoute: FastifyPluginAsyncZod = async (app) => {
       })
 
       if (!bcrypt.compareSync(password, user.password)) {
-        return reply.status(401).send({ message: 'Invalid email or password.' })
+        return reply.status(401).send({
+          message: 'Unauthorized action.',
+          details: 'Invalid email or password.',
+        })
       }
 
       const loginUrl = new URL(`http://localhost:3333/login/${user.id}`)

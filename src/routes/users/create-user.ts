@@ -3,6 +3,11 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { randomInt } from 'node:crypto'
 import { z } from 'zod'
 import { prisma } from '../../lib/prismaClient'
+import {
+  responseBadRequestSchema,
+  responseConflictSchema,
+  responseCreateUserSchema,
+} from '../../schemas/response-status'
 
 export const createUserRoute: FastifyPluginAsyncZod = async (app) => {
   app.post(
@@ -18,13 +23,9 @@ export const createUserRoute: FastifyPluginAsyncZod = async (app) => {
           password: z.string().min(8),
         }),
         response: {
-          201: z.object({
-            id: z.string(),
-            name: z.string(),
-            email: z.string().email(),
-            created_at: z.date(),
-            updated_at: z.date(),
-          }),
+          201: responseCreateUserSchema,
+          400: responseBadRequestSchema,
+          409: responseConflictSchema,
         },
       },
     },

@@ -1,5 +1,7 @@
+import fastifyAuth from '@fastify/auth'
 import cookie, { type FastifyCookieOptions } from '@fastify/cookie'
 import { fastifyCors } from '@fastify/cors'
+import fastifyJwt from '@fastify/jwt'
 import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
 import fastify from 'fastify'
@@ -34,6 +36,14 @@ app.register(cookie, {
   },
 } as FastifyCookieOptions)
 
+app.register(fastifyJwt, {
+  secret: env.SECRET_KEY,
+})
+
+app.register(fastifyAuth, {
+  defaultRelation: 'and',
+})
+
 app.register(fastifyCors, {
   origin: true,
   credentials: true,
@@ -44,12 +54,26 @@ app.register(fastifySwagger, {
     info: {
       title: 'Questions API',
       version: '0.0.1',
+      description: 'API for Questions',
+    },
+    components: {
+      securitySchemes: {
+        cookie: {
+          type: 'apiKey',
+          in: 'cookie',
+          name: '@token',
+        },
+      },
     },
   },
   transform: jsonSchemaTransform,
 })
+
 app.register(fastifySwaggerUi, {
   routePrefix: '/docs',
+  uiConfig: {
+    persistAuthorization: true,
+  },
 })
 
 app.get('/', async () => {

@@ -1,6 +1,10 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { prisma } from '../../lib/prismaClient'
+import {
+  responseNotFoundSchema,
+  responseOkUserSchema,
+} from '../../schemas/response-status'
 
 export const getUserRoute: FastifyPluginAsyncZod = async (app) => {
   app.get(
@@ -14,13 +18,8 @@ export const getUserRoute: FastifyPluginAsyncZod = async (app) => {
           id: z.string().uuid(),
         }),
         response: {
-          200: z.object({
-            id: z.string(),
-            name: z.string(),
-            email: z.string().email(),
-            created_at: z.date(),
-            updated_at: z.date(),
-          }),
+          200: responseOkUserSchema,
+          404: responseNotFoundSchema,
         },
       },
     },

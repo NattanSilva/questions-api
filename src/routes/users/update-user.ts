@@ -1,51 +1,70 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { prisma } from '../../lib/prismaClient'
+import { AuthValidationMiddelware } from '../../middlewares/AuthValidation'
+import { AwnerValidationMiddelware } from '../../middlewares/AwnerValidation'
+import {
+  responseBadRequestSchema,
+  responseConflictSchema,
+  responseNotFoundSchema,
+  responseOkUserSchema,
+  responseUnauthorizedSchema
+} from '../../schemas/response-status'
 
 export const updateUserRoute: FastifyPluginAsyncZod = async (app) => {
-  app.patch(
-    '/users/:id',
-    {
-      schema: {
-        tags: ['Users'],
-        summary: 'Update a user',
-        description: 'Update a user',
-        params: z.object({
-          id: z.string().uuid(),
-        }),
-        body: z.object({
-          name: z.string().min(3).optional(),
-          email: z.string().email().optional(),
-          password: z.string().min(8).optional(),
-        }),
-        response: {
-          200: z.object({
-            id: z.string(),
-            name: z.string(),
-            email: z.string().email(),
-            created_at: z.date(),
-            updated_at: z.date(),
+  app
+    .addHook(
+      'onRequest',
+      app.auth([AuthValidationMiddelware, AwnerValidationMiddelware], {
+        run: 'all',
+      })
+    )
+    .patch(
+      '/users/:id',
+      {
+        schema: {
+          tags: ['Users'],
+          summary: 'Update a user',
+          description: 'Update a user',
+          params: z.object({
+            id: z.string().uuid(),
           }),
+          body: z.object({
+            name: z.string().min(3).optional(),
+            email: z.string().email().optional(),
+            password: z.string().min(8).optional(),
+          }),
+          response: {
+            200: responseOkUserSchema,
+            400: responseBadRequestSchema,
+            401: responseUnauthorizedSchema,
+            404: responseNotFoundSchema,
+            409: responseConflictSchema,
+          },
+          security: [
+            {
+              cookie: ['@token'],
+            },
+          ],
         },
       },
-    },
-    async (request, reply) => {
-      const { id } = request.params
+      async (request, reply) => {
+        const { id } = request.params
 
-      const { name, email, password } = request.body
+        const { name, email, password } = request.body
 
-      const updatedUser = await prisma.user.update({
-        where: {
-          id,
-        },
-        data: {
-          name,
-          email,
-          password,
-        },
-      })
+        const updatedUser = await prisma.user.update({
+          where: {
+            id,
+          },
+          data: {
+            name,
+            email,
+            password,
+          },
+        })
 
-      return reply.status(200).send(updatedUser)
-    }
-  )
+        return reply.status(200).send(updatedUser)
+      }
+    )
 }
