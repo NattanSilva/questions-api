@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import z from 'zod'
 import { env } from '../../env'
 import { prisma } from '../../lib/prismaClient'
-import { responseUnauthorizedSchema } from '../../schemas/response-status'
+import { responseInternalServerErrorSchema, responseUnauthorizedSchema } from '../../schemas/response-status'
 import type { Payload } from './create-token-link'
 
 export const refreshTokenRoute: FastifyPluginAsyncZod = async (app) => {
@@ -17,6 +17,7 @@ export const refreshTokenRoute: FastifyPluginAsyncZod = async (app) => {
         response: {
           401: responseUnauthorizedSchema,
           302: z.null(),
+          500: responseInternalServerErrorSchema,
         },
       },
     },

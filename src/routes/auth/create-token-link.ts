@@ -5,9 +5,10 @@ import { z } from 'zod'
 import { env } from '../../env'
 import { prisma } from '../../lib/prismaClient'
 import {
-  responseConflictSchema,
+  responseInternalServerErrorSchema,
   responseNotFoundSchema,
   responseOkLoginSchema,
+  responseUnauthorizedSchema,
 } from '../../schemas/response-status'
 
 export type Payload = {
@@ -28,8 +29,9 @@ export const createTokenLinkRoute: FastifyPluginAsyncZod = async (app) => {
         }),
         response: {
           200: responseOkLoginSchema,
-          401: responseConflictSchema,
+          401: responseUnauthorizedSchema,
           404: responseNotFoundSchema,
+          500: responseInternalServerErrorSchema,
         },
       },
     },

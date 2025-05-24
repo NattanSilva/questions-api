@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { env } from '../../env'
-import { responseUnauthorizedSchema } from '../../schemas/response-status'
+import { responseInternalServerErrorSchema, responseUnauthorizedSchema } from '../../schemas/response-status'
 
 export type Payload = {
   userId: string
@@ -25,6 +25,7 @@ export const getTokenRoute: FastifyPluginAsyncZod = async (app) => {
         response: {
           401: responseUnauthorizedSchema,
           302: z.null(),
+          500: responseInternalServerErrorSchema,
         },
       },
     },

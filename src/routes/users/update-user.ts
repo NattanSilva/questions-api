@@ -6,6 +6,7 @@ import { AwnerValidationMiddelware } from '../../middlewares/AwnerValidation'
 import {
   responseBadRequestSchema,
   responseConflictSchema,
+  responseInternalServerErrorSchema,
   responseNotFoundSchema,
   responseOkUserSchema,
   responseUnauthorizedSchema
@@ -40,6 +41,7 @@ export const updateUserRoute: FastifyPluginAsyncZod = async (app) => {
             401: responseUnauthorizedSchema,
             404: responseNotFoundSchema,
             409: responseConflictSchema,
+            500: responseInternalServerErrorSchema,
           },
           security: [
             {

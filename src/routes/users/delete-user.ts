@@ -5,6 +5,7 @@ import { AuthValidationMiddelware } from '../../middlewares/AuthValidation'
 import { AwnerValidationMiddelware } from '../../middlewares/AwnerValidation'
 import {
   responseBadRequestSchema,
+  responseInternalServerErrorSchema,
   responseNoContentSchema,
   responseNotFoundSchema,
   responseUnauthorizedSchema,
@@ -34,6 +35,7 @@ export const deleteUserRoute: FastifyPluginAsyncZod = async (app) => {
             401: responseUnauthorizedSchema,
             404: responseNotFoundSchema,
             204: responseNoContentSchema,
+            500: responseInternalServerErrorSchema,
           },
           security: [
             {

@@ -7,6 +7,7 @@ import {
   responseBadRequestSchema,
   responseConflictSchema,
   responseCreateUserSchema,
+  responseInternalServerErrorSchema,
 } from '../../schemas/response-status'
 
 export const createUserRoute: FastifyPluginAsyncZod = async (app) => {
@@ -26,6 +27,7 @@ export const createUserRoute: FastifyPluginAsyncZod = async (app) => {
           201: responseCreateUserSchema,
           400: responseBadRequestSchema,
           409: responseConflictSchema,
+          500: responseInternalServerErrorSchema,
         },
       },
     },

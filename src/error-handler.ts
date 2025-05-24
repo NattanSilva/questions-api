@@ -13,29 +13,33 @@ export const errorHandler: FastifyErrorHandler = async (
   if (hasZodFastifySchemaValidationErrors(error)) {
     return reply.status(400).send({
       message: 'Invalid Input',
-      details: error.validation,
+      details: error.validation.map(
+        (err) =>
+          `${err.instancePath.replaceAll('/', '')}: ${err.message}`
+      ),
     })
   }
 
   if (error instanceof ZodError) {
     return reply.status(400).send({
       message: 'Invalid Input',
-      details: error,
+      details: [error.message],
     })
   }
 
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
     if (error.code === 'P2002') {
       return reply.status(409).send({
-        message: 'this field are already in use.',
-        ...error.meta,
+        message: `These fields are already in use.`,
+        details: error.meta?.target,
       })
     }
 
     if (error.code === 'P2025') {
+      console.log(error.meta)
       return reply.status(404).send({
         message: `${error.meta?.modelName} not found.`,
-        ...error.meta,
+        details: error.meta?.cause?.toString,
       })
     }
   }
@@ -46,7 +50,15 @@ export const errorHandler: FastifyErrorHandler = async (
       .send({ message: 'Prisma Internal Error', details: error })
   }
 
+  if (error.statusCode === 400) {
+    return reply
+      .status(error.statusCode ?? 400)
+      .send({ message: 'Bad Request', details: [error.message] })
+  }
+
+  console.log(error)
+
   return reply
-    .status(error.statusCode ?? 500)
-    .send({ message: error.message ?? 'Internal Server Error', details: error })
+    .status(500)
+    .send({ message: 'Internal Server Error', details: error })
 }

@@ -1,7 +1,7 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { prisma } from '../../lib/prismaClient'
-import { responseOkUserSchema } from '../../schemas/response-status'
+import { responseInternalServerErrorSchema, responseOkUserSchema } from '../../schemas/response-status'
 
 export const getAllUsersRoute: FastifyPluginAsyncZod = async (app) => {
   app.get(
@@ -13,6 +13,7 @@ export const getAllUsersRoute: FastifyPluginAsyncZod = async (app) => {
         description: 'Get all users',
         response: {
           200: z.array(responseOkUserSchema),
+          500: responseInternalServerErrorSchema,
         },
       },
     },
