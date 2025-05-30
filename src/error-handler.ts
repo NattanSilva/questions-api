@@ -56,6 +56,12 @@ export const errorHandler: FastifyErrorHandler = async (
       .send({ message: 'Bad Request', details: [error.message] })
   }
 
+  if (error.statusCode === 401) {
+    return reply
+      .status(error.statusCode ?? 401)
+      .send({ message: 'Unauthorized', details: error.message })
+  }
+
   console.log(error)
 
   return reply

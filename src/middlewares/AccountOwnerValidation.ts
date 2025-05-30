@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import z from 'zod'
 
-export const AwnerValidationMiddelware = async (
+export const AccountOwnerValidationMiddelware = async (
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<void> => {
@@ -12,8 +12,6 @@ export const AwnerValidationMiddelware = async (
   })
 
   const { id: paramsUserId } = parmsSchema.parse(request.params)
-
-  console.log(id, paramsUserId)
 
   if (paramsUserId !== id) {
     return reply.status(401).send({

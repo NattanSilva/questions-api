@@ -1,22 +1,22 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { prisma } from '../../lib/prismaClient'
+import { AccountOwnerValidationMiddelware } from '../../middlewares/AccountOwnerValidation'
 import { AuthValidationMiddelware } from '../../middlewares/AuthValidation'
-import { AwnerValidationMiddelware } from '../../middlewares/AwnerValidation'
 import {
   responseBadRequestSchema,
   responseConflictSchema,
   responseInternalServerErrorSchema,
   responseNotFoundSchema,
   responseOkUserSchema,
-  responseUnauthorizedSchema
+  responseUnauthorizedSchema,
 } from '../../schemas/response-status'
 
 export const updateUserRoute: FastifyPluginAsyncZod = async (app) => {
   app
     .addHook(
       'onRequest',
-      app.auth([AuthValidationMiddelware, AwnerValidationMiddelware], {
+      app.auth([AuthValidationMiddelware, AccountOwnerValidationMiddelware], {
         run: 'all',
       })
     )

@@ -3,18 +3,23 @@ import { z } from 'zod'
 import { QuestionType } from '../../generated/prisma'
 import { prisma } from '../../lib/prismaClient'
 import { AuthValidationMiddelware } from '../../middlewares/AuthValidation'
+import { QuestionAuthorValidationMiddelware } from '../../middlewares/QuestionAuthorValidation'
 import {
   responseBadRequestSchema,
   responseInternalServerErrorSchema,
   responseNotFoundSchema,
   responseOkQuestionSchema,
+  responseUnauthorizedSchema,
 } from '../../schemas/response-status'
 
 export const updateQuestionRoute: FastifyPluginAsyncZod = async (app) => {
   app
     .addHook(
       'onRequest',
-      app.auth([AuthValidationMiddelware], { run: 'all', relation: 'and' })
+      app.auth([AuthValidationMiddelware, QuestionAuthorValidationMiddelware], {
+        run: 'all',
+        relation: 'and',
+      })
     )
     .patch(
       '/questions/:id',
@@ -62,6 +67,7 @@ export const updateQuestionRoute: FastifyPluginAsyncZod = async (app) => {
           response: {
             200: responseOkQuestionSchema,
             400: responseBadRequestSchema,
+            401: responseUnauthorizedSchema,
             404: responseNotFoundSchema,
             500: responseInternalServerErrorSchema,
           },
