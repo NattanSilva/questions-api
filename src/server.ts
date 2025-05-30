@@ -17,8 +17,10 @@ import { createTokenLinkRoute } from './routes/auth/create-token-link'
 import { getTokenRoute } from './routes/auth/get-token'
 import { refreshTokenRoute } from './routes/auth/refresh-token'
 import { createQuestionRoute } from './routes/questions/create-question'
+import { deleteQuestionRoute } from './routes/questions/delete-question'
 import { getAllQuestionsRoute } from './routes/questions/get-all-questions'
 import { getQuestionRoute } from './routes/questions/get-question'
+import { updateQuestionRoute } from './routes/questions/update-question'
 import { createUserRoute } from './routes/users/create-user'
 import { deleteUserRoute } from './routes/users/delete-user'
 import { getAllUsersRoute } from './routes/users/get-all-users'
@@ -94,6 +96,8 @@ app.register(refreshTokenRoute)
 app.register(createQuestionRoute)
 app.register(getAllQuestionsRoute)
 app.register(getQuestionRoute)
+app.register(updateQuestionRoute)
+app.register(deleteQuestionRoute)
 
 app
   .listen({

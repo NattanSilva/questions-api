@@ -19,7 +19,7 @@ const responseOkLoginSchema = z
 
 const responseOkQuestionSchema = z
   .object({
-    id: z.string(),
+    id: z.string().uuid(),
     title: z.string(),
     type: z.string(),
     author_id: z.string().uuid(),
@@ -43,7 +43,7 @@ const responseCreateUserSchema = z
 
 const responseCreatedQuestionSchema = z
   .object({
-    id: z.string(),
+    id: z.string().uuid(),
     title: z.string(),
     type: z.string(),
     author_id: z.string().uuid(),
@@ -61,7 +61,7 @@ const responseNoContentSchema = z.null().describe('Deleted')
 const responseBadRequestSchema = z
   .object({
     message: z.string(),
-    details: z.array(z.string()), 
+    details: z.array(z.string()),
   })
   .describe('Bad request')
 
